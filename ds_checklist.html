@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>DS Posting Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F5F3;
+    --surface: #FFFFFF;
+    --surface2: #F0EFED;
+    --border: #E0DED9;
+    --text: #1A1A1A;
+    --muted: #777;
+    --subtle: #AAA;
+    --green: #00A86B;
+    --green-dim: rgba(0,168,107,0.08);
+    --blue: #2B7FD4;
+    --amber: #D48A00;
+    --purple: #7C5CBF;
+    --red: #FF6B6B;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; padding: 0; }
+
+  .app { max-width: 430px; margin: 0 auto; padding: 20px 16px 40px; }
+
+  /* Header */
+  .header { margin-bottom: 24px; }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+  .brand { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; font-family: var(--mono); }
+  .reset-btn { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-family: var(--font); }
+  .week-label { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
+  .week-sub { font-size: 12px; color: var(--subtle); margin-top: 2px; }
+
+  /* Day grid */
+  .day-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 20px; }
+  .day-pill {
+    border-radius: 10px; border: 1px solid var(--border); background: var(--surface);
+    padding: 8px 2px 6px; text-align: center; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .day-pill.today { border-color: var(--blue); }
+  .day-pill.active { border-color: var(--green); background: var(--green-dim); }
+  .day-pill.active .day-abbr { color: var(--green); }
+  .day-abbr { font-size: 9px; font-weight: 500; color: var(--subtle); letter-spacing: 0.05em; margin-bottom: 4px; text-transform: uppercase; }
+  .day-num { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+  .day-dots { display: flex; justify-content: center; gap: 2px; min-height: 5px; flex-wrap: wrap; padding: 0 2px; }
+  .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+  .dot.done { background: var(--green); }
+  .dot.soon { background: var(--amber); opacity: 0.5; }
+
+  /* Day panel */
+  .day-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; margin-bottom: 20px; }
+  .panel-head { padding: 12px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .panel-day-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .panel-prog { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+
+  .section-head { font-size: 9px; font-weight: 500; letter-spacing: 0.1em; color: var(--subtle); text-transform: uppercase; padding: 8px 16px 4px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+
+  .task-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; user-select: none; }
+  .task-row:last-child { border-bottom: none; }
+  .task-row:active { background: var(--surface2); }
+
+  .tick { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .tick.on { background: var(--green); border-color: var(--green); }
+  .tick svg { width: 11px; height: 11px; stroke: #000; stroke-width: 2.5; fill: none; }
+
+  .task-content { flex: 1; min-width: 0; }
+  .task-name { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.35; transition: color 0.15s; }
+  .task-name.done-text { color: var(--subtle); }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 20px; white-space: nowrap; line-height: 1.5; }
+  .tag-ben { background: rgba(43,127,212,0.1); color: var(--blue); }
+  .tag-hom { background: rgba(0,168,107,0.1); color: var(--green); }
+  .tag-plat { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .tag-fort { background: rgba(124,92,191,0.1); color: var(--purple); }
+  .tag-soon { background: rgba(212,138,0,0.1); color: var(--amber); }
+
+  .time-area { margin-top: 7px; }
+  .time-select { font-size: 10px; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--muted); cursor: pointer; font-family: var(--font); appearance: none; -webkit-appearance: none; }
+  .time-logged { font-size: 10px; color: var(--green); font-family: var(--mono); }
+
+  /* LinkedIn section */
+  .li-section { margin-top: 4px; }
+  .section-label { font-size: 9px; font-weight: 500; letter-spacing: 0.1em; color: var(--subtle); text-transform: uppercase; margin-bottom: 8px; padding: 0 2px; }
+  .li-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+
+  /* Progress bar */
+  .week-progress { margin-bottom: 20px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .prog-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
+
+  .empty-state { text-align: center; padding: 32px 16px; color: var(--subtle); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div class="brand">Digital Sparks</div>
+      <button class="reset-btn" onclick="hardReset()">Reset week</button>
+    </div>
+    <div class="week-label" id="wlabel">—</div>
+    <div class="week-sub">Resets every Sunday night</div>
+  </div>
+
+  <div class="week-progress">
+    <div class="prog-label"><span>Week progress</span><span id="prog-text">0 / 0</span></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="day-grid" id="daygrid"></div>
+  <div id="daypanel"></div>
+
+
+</div>
+
+<script>
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const FULL = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+const SCHEDULE = {
+  Mon: [
+    { id:'m1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am — repurposed via tool' },
+    { id:'m2', name:'Ben & Ellis collab video', owner:'hom', platforms:['Ben Insta (Ellis collab)','DS Instagram','PS Instagram','Ben LinkedIn','DS LinkedIn'], timeSlot:true },
+  ],
+  Tue: [
+    { id:'t1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
+    { id:'t2', name:'Ben advisory piece', owner:'hom', platforms:['Ben Instagram','Ben TikTok'], note:'No collabs', timeSlot:true },
+    { id:'t3', name:'Non-property client showcase', owner:'hom', platforms:['DS Instagram'], note:'DS work demo', timeSlot:true },
+    { id:'t4', name:'Property client showcase', owner:'hom', platforms:['PS Instagram'], note:'PS work demo', timeSlot:true },
+    { id:'t5', name:'Trade press article', owner:'ben', platforms:['Trade publication'], fortnightly:true },
+  ],
+  Wed: [
+    { id:'w1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
+    { id:'w2', name:'Social media update carousel', owner:'hom', platforms:['Ben Instagram','DS Instagram','PS Instagram','Google Business','Ben LinkedIn'], note:'Collab DS + PS', timeSlot:true },
+    { id:'w3', name:'Facebook groups post', owner:'ben', platforms:['Industry FB Groups'], note:'Value-led, humble tone' },
+  ],
+  Thu: [
+    { id:'th1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
+    { id:'th2', name:'Throwback Thursday', owner:'hom', platforms:['Ben Instagram','PS Instagram','DS LinkedIn'], note:'Confirm HoM re Ben LinkedIn', timeSlot:true },
+    { id:'th3', name:'Written post #1', owner:'ben', platforms:['Ben LinkedIn'], note:'Authority piece' },
+  ],
+  Fri: [
+    { id:'f1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
+    { id:'f2', name:'Ben advisory piece', owner:'hom', platforms:['Ben Instagram','DS Instagram','PS Instagram','Google Business','Ben LinkedIn'], note:'Collab DS + PS', timeSlot:true },
+    { id:'f3', name:'Weekly vlog', owner:'ben', platforms:['Ben LinkedIn'] },
+  ],
+  Sat: [
+    { id:'sa1', name:'Humour / viral trend post', owner:'ben', platforms:['Instagram','Facebook','LinkedIn'], soon:true },
+  ],
+  Sun: [
+    { id:'su1', name:'Family & personal post', owner:'ben', platforms:['Instagram','Facebook','LinkedIn'], soon:true },
+    { id:'su2', name:'Written post #2', owner:'ben', platforms:['Ben LinkedIn'], note:'Sunday evening' },
+  ],
+};
+
+
+
+function getWeekKey() {
+  const n = new Date(), day = n.getDay();
+  const diff = n.getDate() - (day === 0 ? 6 : day - 1);
+  return new Date(n.setDate(diff)).toISOString().slice(0,10);
+}
+function load() { try { return JSON.parse(localStorage.getItem('ds3_' + getWeekKey()) || '{}'); } catch { return {}; } }
+function save(s) { localStorage.setItem('ds3_' + getWeekKey(), JSON.stringify(s)); }
+function hardReset() { if (!confirm('Reset all ticks for this week?')) return; localStorage.removeItem('ds3_' + getWeekKey()); activeDay = null; render(); }
+
+function getWeekDates() {
+  const n = new Date(), day = n.getDay();
+  const diff = n.getDate() - (day === 0 ? 6 : day - 1);
+  const mon = new Date(); mon.setDate(mon.getDate() - (day === 0 ? 6 : day - 1));
+  return Array.from({length:7}, (_,i) => { const d = new Date(mon); d.setDate(mon.getDate()+i); return d; });
+}
+
+let activeDay = null;
+
+function render() {
+  const state = load();
+  const dates = getWeekDates();
+  const fmt = d => d.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+  document.getElementById('wlabel').textContent = fmt(dates[0]) + ' – ' + fmt(dates[6]);
+
+  // Progress
+  const allTasks = Object.values(SCHEDULE).flat();
+  const totalDone = allTasks.filter(t => state[t.id]?.done).length;
+  document.getElementById('prog-text').textContent = `${totalDone} / ${allTasks.length}`;
+  document.getElementById('prog-fill').style.width = `${Math.round(totalDone/allTasks.length*100)}%`;
+
+  // Grid
+  const grid = document.getElementById('daygrid');
+  grid.innerHTML = '';
+  const today = new Date();
+
+  dates.forEach((date, i) => {
+    const key = DAYS[i];
+    const tasks = SCHEDULE[key] || [];
+    const isToday = date.toDateString() === today.toDateString();
+    const isActive = activeDay === key;
+
+    const pill = document.createElement('div');
+    pill.className = 'day-pill' + (isToday ? ' today' : '') + (isActive ? ' active' : '');
+
+    const dots = tasks.map(t => {
+      const cls = t.soon ? 'soon' : (state[t.id]?.done ? 'done' : '');
+      return `<div class="dot ${cls}"></div>`;
+    }).join('');
+
+    pill.innerHTML = `<div class="day-abbr">${key}</div><div class="day-num">${date.getDate()}</div><div class="day-dots">${dots}</div>`;
+    pill.onclick = () => { activeDay = activeDay === key ? null : key; render(); };
+    grid.appendChild(pill);
+  });
+
+  // Day panel
+  const panel = document.getElementById('daypanel');
+  if (!activeDay) { panel.innerHTML = ''; return; }
+
+  const dayIdx = DAYS.indexOf(activeDay);
+  const tasks = SCHEDULE[activeDay] || [];
+  const done = tasks.filter(t => state[t.id]?.done).length;
+
+  let html = `<div class="panel-head"><span class="panel-day-name">${FULL[dayIdx]}</span><span class="panel-prog">${done}/${tasks.length}</span></div>`;
+
+  function taskRow(task) {
+    const ts = state[task.id] || {};
+    const ticked = !!ts.done;
+    const ownerLabel = task.owner === 'ben' ? 'Ben' : 'Head of Marketing';
+    const ownerClass = task.owner === 'ben' ? 'tag-ben' : 'tag-hom';
+    const plats = task.platforms.map(p => `<span class="tag tag-plat">${p}</span>`).join('');
+    const fort = task.fortnightly ? '<span class="tag tag-fort">fortnightly</span>' : '';
+    const soon = task.soon ? '<span class="tag tag-soon">coming soon</span>' : '';
+    const check = `<svg viewBox="0 0 12 12"><polyline points="1.5,6 5,9.5 10.5,2.5"/></svg>`;
+    return `<div class="task-row" onclick="toggle('${task.id}')">
+      <div class="tick ${ticked ? 'on' : ''}">${ticked ? check : ''}</div>
+      <div class="task-content">
+        <div class="task-name ${ticked ? 'done-text' : ''}">${task.name}</div>
+        <div class="tags"><span class="tag ${ownerClass}">${ownerLabel}</span>${plats}${fort}${soon}</div>
+      </div>
+    </div>`;
+  }
+
+  // Ben's tasks first, then HoM tasks
+  const benTasks = tasks.filter(t => t.owner === 'ben');
+  const homTasks = tasks.filter(t => t.owner === 'hom');
+
+  if (benTasks.length) {
+    if (homTasks.length) html += `<div class="section-head">Ben</div>`;
+    benTasks.forEach(t => { html += taskRow(t); });
+  }
+  if (homTasks.length) {
+    if (benTasks.length) html += `<div class="section-head">Head of Marketing</div>`;
+    homTasks.forEach(t => { html += taskRow(t); });
+  }
+
+  panel.innerHTML = html;
+}
+
+function renderLI(state) {}
+
+function toggle(id) { const s = load(); s[id] = s[id] || {}; s[id].done = !s[id].done; save(s); render(); }
+
+// Auto-open today
+const todayIdx = new Date().getDay();
+activeDay = DAYS[todayIdx === 0 ? 6 : todayIdx - 1];
+render();
+</script>
+</body>
+</html>
