@@ -129,37 +129,38 @@ const FULL = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sun
 
 const SCHEDULE = {
   Mon: [
-    { id:'m1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am — repurposed via tool' },
-    { id:'m2', name:'Ben & Ellis collab video', owner:'hom', platforms:['Ben Insta (Ellis collab)','DS Instagram','PS Instagram','Ben LinkedIn','DS LinkedIn'], timeSlot:true },
+    { id:'m1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook'], note:'7:30am — repurposed via tool' },
+    { id:'m2', name:'Ben & Ellis collab video', owner:'hom', platforms:['Instagram (Ben + DS + PS + Ellis collab)','Ben LinkedIn'] },
   ],
   Tue: [
-    { id:'t1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
-    { id:'t2', name:'Ben advisory piece', owner:'hom', platforms:['Ben Instagram','Ben TikTok'], note:'No collabs', timeSlot:true },
-    { id:'t3', name:'Non-property client showcase', owner:'hom', platforms:['DS Instagram'], note:'DS work demo', timeSlot:true },
-    { id:'t4', name:'Property client showcase', owner:'hom', platforms:['PS Instagram'], note:'PS work demo', timeSlot:true },
-    { id:'t5', name:'Trade press article', owner:'ben', platforms:['Trade publication'], fortnightly:true },
+    { id:'t1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook'], note:'7:30am' },
+    { id:'t2', name:'Ben advisory piece', owner:'hom', platforms:['Ben Instagram'], note:'No collabs' },
+    { id:'t3', name:'Non-property client showcase', owner:'hom', platforms:['DS Instagram'], note:'DS work demo' },
+    { id:'t4', name:'Property client showcase', owner:'hom', platforms:['PS Instagram','DS LinkedIn','DS Facebook'], note:'PS work demo' },
+    { id:'t5', name:'Trade Press Article Written', owner:'ben', platforms:['Trade publication'], fortnightly:true },
+    { id:'t6', name:'Written post #1', owner:'ben', platforms:['Ben LinkedIn'] },
   ],
   Wed: [
-    { id:'w1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
-    { id:'w2', name:'Social media update carousel', owner:'hom', platforms:['Ben Instagram','DS Instagram','PS Instagram','Google Business','Ben LinkedIn'], note:'Collab DS + PS', timeSlot:true },
-    { id:'w3', name:'Facebook groups post', owner:'ben', platforms:['Industry FB Groups'], note:'Value-led, humble tone' },
+    { id:'w1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook'], note:'7:30am' },
+    { id:'w2', name:'Social media update carousel', owner:'hom', platforms:['Instagram (Ben + DS + PS collab)','Ben LinkedIn','DS Facebook'] },
+    { id:'w3', name:'DS Team Content', owner:'hom', platforms:['Instagram (DS + PS collab)','DS LinkedIn','DS Facebook'] },
+    { id:'w4', name:'Facebook groups post', owner:'ben', platforms:['Industry FB Groups'], note:'Value-led, humble tone' },
   ],
   Thu: [
-    { id:'th1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
-    { id:'th2', name:'Throwback Thursday', owner:'hom', platforms:['Ben Instagram','PS Instagram','DS LinkedIn'], note:'Confirm HoM re Ben LinkedIn', timeSlot:true },
-    { id:'th3', name:'Written post #1', owner:'ben', platforms:['Ben LinkedIn'], note:'Authority piece' },
+    { id:'th1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook'], note:'7:30am' },
+    { id:'th2', name:'Throwback Thursday', owner:'hom', platforms:['Instagram (Ben + DS + PS collab)','DS LinkedIn','DS Facebook'], note:'Confirm HoM re Ben LinkedIn' },
+    { id:'th3', name:'Written post #2', owner:'ben', platforms:['Ben LinkedIn'] },
   ],
   Fri: [
-    { id:'f1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook','TikTok'], note:'7:30am' },
-    { id:'f2', name:'Ben advisory piece', owner:'hom', platforms:['Ben Instagram','DS Instagram','PS Instagram','Google Business','Ben LinkedIn'], note:'Collab DS + PS', timeSlot:true },
-    { id:'f3', name:'Weekly vlog', owner:'ben', platforms:['Ben LinkedIn'] },
+    { id:'f1', name:'Daily video blog', owner:'ben', platforms:['Instagram','Facebook'], note:'7:30am' },
+    { id:'f2', name:'Ben advisory piece', owner:'hom', platforms:['Instagram (Ben + DS + PS collab)'] },
   ],
   Sat: [
     { id:'sa1', name:'Humour / viral trend post', owner:'ben', platforms:['Instagram','Facebook','LinkedIn'], soon:true },
   ],
   Sun: [
-    { id:'su1', name:'Family & personal post', owner:'ben', platforms:['Instagram','Facebook','LinkedIn'], soon:true },
-    { id:'su2', name:'Written post #2', owner:'ben', platforms:['Ben LinkedIn'], note:'Sunday evening' },
+    { id:'su1', name:'Family & personal post', owner:'ben', platforms:['Instagram','Facebook'], soon:true },
+    { id:'su2', name:'Weekly vlog', owner:'ben', platforms:['Ben LinkedIn'] },
   ],
 };
 
@@ -232,8 +233,6 @@ function render() {
   function taskRow(task) {
     const ts = state[task.id] || {};
     const ticked = !!ts.done;
-    const ownerLabel = task.owner === 'ben' ? 'Ben' : 'Head of Marketing';
-    const ownerClass = task.owner === 'ben' ? 'tag-ben' : 'tag-hom';
     const plats = task.platforms.map(p => `<span class="tag tag-plat">${p}</span>`).join('');
     const fort = task.fortnightly ? '<span class="tag tag-fort">fortnightly</span>' : '';
     const soon = task.soon ? '<span class="tag tag-soon">coming soon</span>' : '';
@@ -242,7 +241,7 @@ function render() {
       <div class="tick ${ticked ? 'on' : ''}">${ticked ? check : ''}</div>
       <div class="task-content">
         <div class="task-name ${ticked ? 'done-text' : ''}">${task.name}</div>
-        <div class="tags"><span class="tag ${ownerClass}">${ownerLabel}</span>${plats}${fort}${soon}</div>
+        <div class="tags">${plats}${fort}${soon}</div>
       </div>
     </div>`;
   }
